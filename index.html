@@ -1,85 +1,134 @@
+
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NULL ACCESS</title>
+
 <style>
-*{box-sizing:border-box}
-body{
- margin:0;background:#000;color:#00ff66;
- font-family:Consolas,monospace;overflow:hidden;
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: #000;
+  color: #00ff66;
+  font-family: monospace;
+  overflow: hidden;
 }
-#terminal{
- padding:15px;height:100vh;overflow:hidden;
- font-size:12px;line-height:1.65;
- white-space:pre-wrap;
- text-shadow:0 0 5px #00ff66;
+
+#screen {
+  padding: 20px;
+  height: 100vh;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 1.6;
+  word-break: break-all;
 }
-.red{color:#ff2525;text-shadow:0 0 8px red}
-.dim{color:#397a50}
-#overlay{
- display:none;position:fixed;inset:0;
- background:#000;align-items:center;
- justify-content:center;flex-direction:column;
- text-align:center;padding:20px;
+
+.red { color: #ff2222; }
+.white { color: white; }
+.dim { color: #087d39; }
+
+#warning {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: black;
+  color: red;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  font-size: 25px;
+  z-index: 5;
+  animation: flash 0.4s infinite alternate;
 }
-#overlay h1{color:#ff2222;letter-spacing:5px}
-#overlay p{color:#888}
+
+@keyframes flash {
+  from { background: #000; }
+  to { background: #200000; }
+}
 </style>
 </head>
+
 <body>
+<div id="screen">
+  <div class="white">NULL ACCESS SYSTEM v4.09</div>
+  <div class="dim">Initializing terminal...</div>
+  <br>
+  <div id="logs"></div>
+</div>
 
-<div id="terminal"></div>
-
-<div id="overlay">
-<h1>CONNECTION LOST</h1>
-<p id="last"></p>
+<div id="warning">
+  <div>ACCESS DENIED</div>
+  <br>
+  <div style="font-size:15px">YOU WERE NEVER ALONE.</div>
 </div>
 
 <script>
-const terminal=document.getElementById("terminal");
+const logs = document.getElementById("logs");
+const screen = document.getElementById("screen");
+const warning = document.getElementById("warning");
 
-const fakeUser={
- name:"UNKNOWN_USER",
- device:"VIRTUAL_DEVICE_01",
- id:"NULL-7FA92",
- location:"UNKNOWN",
- files:["DOCUMENT_001.dat","SYSTEM_LOG.dat","UNKNOWN_FILE.bin"]
-};
+let count = 0;
 
-let count=0;
+const messages = [
+  "Connecting to remote node...",
+  "Scanning virtual network...",
+  "0x7FA2C901",
+  "Analyzing fictional data...",
+  "Searching unknown directory...",
+  "USER: UNKNOWN",
+  "DEVICE: UNIDENTIFIED",
+  "WARNING: UNEXPECTED RESPONSE",
+  "ACCESSING NULL DIRECTORY...",
+  "CONNECTION STATUS: UNSTABLE"
+];
 
-function randomHex(){
- return "0x"+Math.floor(Math.random()*16777215)
- .toString(16).toUpperCase().padStart(6,"0");
-}
+const timer = setInterval(() => {
+  const line = document.createElement("div");
 
-function randomBinary(){
- return Array.from({length:32},
- ()=>Math.random()<0.5?"0":"1").join("");
-}
+  if (count % 7 === 0) {
+    line.className = "red";
+    line.textContent = "[WARNING] " + messages[count % messages.length];
+  } else {
+    line.textContent =
+      messages[count % messages.length] +
+      " 0x" + Math.floor(Math.random() * 16777215)
+        .toString(16).toUpperCase();
+  }
 
-function randomIP(){
- return `192.0.2.${Math.floor(Math.random()*254)+1}`;
-}
+  logs.appendChild(line);
+  screen.scrollTop = screen.scrollHeight;
+  count++;
 
-function line(text,cls=""){
- const div=document.createElement("div");
- div.textContent=text;
- if(cls)div.className=cls;
- terminal.appendChild(div);
- terminal.scrollTop=terminal.scrollHeight;
-}
+  if (count >= 55) {
+    clearInterval(timer);
 
-function flood(){
- if(count>=35)return;
+    setTimeout(() => {
+      logs.innerHTML = `
+        <div class="red">WHO ARE YOU?</div>
+        <br>
+        <div class="white">I CAN SEE YOU.</div>
+      `;
 
- line(
- randomHex()+"  "+randomBinary()+"  "+
- randomHex()+"  "+randomIP()
- );
+      setTimeout(() => {
+        warning.style.display = "flex";
 
- count++;
- setTimeout(flood,80);
-}
+        setTimeout(() => {
+          document.body.innerHTML = "";
+          document.body.style.background = "black";
+        }, 3500);
+
+      }, 2500);
+
+    }, 1500);
+  }
+}, 180);
+
+</script>
+</body>
+</html>
+
+ 
