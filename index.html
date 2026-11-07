@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NULL ACCESS</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#000;color:#00ff66;
+ font-family:Consolas,monospace;overflow:hidden;
+}
+#terminal{
+ padding:15px;height:100vh;overflow:hidden;
+ font-size:12px;line-height:1.65;
+ white-space:pre-wrap;
+ text-shadow:0 0 5px #00ff66;
+}
+.red{color:#ff2525;text-shadow:0 0 8px red}
+.dim{color:#397a50}
+#overlay{
+ display:none;position:fixed;inset:0;
+ background:#000;align-items:center;
+ justify-content:center;flex-direction:column;
+ text-align:center;padding:20px;
+}
+#overlay h1{color:#ff2222;letter-spacing:5px}
+#overlay p{color:#888}
+</style>
+</head>
+<body>
+
+<div id="terminal"></div>
+
+<div id="overlay">
+<h1>CONNECTION LOST</h1>
+<p id="last"></p>
+</div>
+
+<script>
+const terminal=document.getElementById("terminal");
+
+const fakeUser={
+ name:"UNKNOWN_USER",
+ device:"VIRTUAL_DEVICE_01",
+ id:"NULL-7FA92",
+ location:"UNKNOWN",
+ files:["DOCUMENT_001.dat","SYSTEM_LOG.dat","UNKNOWN_FILE.bin"]
+};
+
+let count=0;
+
+function randomHex(){
+ return "0x"+Math.floor(Math.random()*16777215)
+ .toString(16).toUpperCase().padStart(6,"0");
+}
+
+function randomBinary(){
+ return Array.from({length:32},
+ ()=>Math.random()<0.5?"0":"1").join("");
+}
+
+function randomIP(){
+ return `192.0.2.${Math.floor(Math.random()*254)+1}`;
+}
+
+function line(text,cls=""){
+ const div=document.createElement("div");
+ div.textContent=text;
+ if(cls)div.className=cls;
+ terminal.appendChild(div);
+ terminal.scrollTop=terminal.scrollHeight;
+}
+
+function flood(){
+ if(count>=35)return;
+
+ line(
+ randomHex()+"  "+randomBinary()+"  "+
+ randomHex()+"  "+randomIP()
+ );
+
+ count++;
+ setTimeout(flood,80);
+}
